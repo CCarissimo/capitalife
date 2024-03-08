@@ -9,41 +9,17 @@ from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_pef
 from trl import SFTTrainer
 import os, torch, platform, warnings
 
-base_model = "mistralai/Mistral-7B-v0.1" 
-# Load base model(Mistral 7B)
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit= True,
-    bnb_4bit_quant_type= "nf4",
-    bnb_4bit_compute_dtype= torch.bfloat16,
-    bnb_4bit_use_double_quant= False,
-)
-model = AutoModelForCausalLM.from_pretrained(
-    base_model,
-    quantization_config=bnb_config,
-    device_map={"": 0}
-)
-model.config.use_cache = False # silence the warnings. Please re-enable for inference!
-model.config.pretraining_tp = 1
-model.gradient_checkpointing_enable()
-# Load tokenizer
-tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
-tokenizer.pad_token = tokenizer.eos_token
-tokenizer.add_eos_token = True
-tokenizer.add_bos_token, tokenizer.add_eos_token
+
+#DATA PIPELINE
+
+# filenames = [x for x in os.listdir("txtfiles/")]
+# with open('data/data.txt', 'w') as outfile:
+#     for fname in filenames:
+#         with open("txtfiles/" + fname) as infile:
+#             outfile.write(infile.read())
 
 
-model = prepare_model_for_kbit_training(model)
-peft_config = LoraConfig(
-        r=16,
-        lora_alpha=16,
-        lora_dropout=0.05,
-        bias="none",
-        task_type="CAUSAL_LM",
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
-    )
-model = get_peft_model(model, peft_config)
-
-
+            
 dataset = load_dataset(path="data", split="train")
 remove_idx = []
 for i, data in enumerate(dataset):
@@ -101,23 +77,51 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
 
-# model = AutoModelForCausalLM.from_pretrained("TheBloke/Mistral-7B-v0.1-GGUF", model_file="mistral-7b-v0.1.Q4_K_M.gguf", model_type="mistral")#, quantization_config=bnb_config)
-# model = prepare_model_for_kbit_training(model)
-# peft_config = LoraConfig(
-#         r=16,
-#         lora_alpha=16,
-#         lora_dropout=0.05,
-#         bias="none",
-#         task_type="CAUSAL_LM",
-#         target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
-#     )
-# model = get_peft_model(model, peft_config)
+#MODEL PIPELINE
+
+
+
+
+
+base_model = "mistralai/Mistral-7B-v0.1" 
+# Load base model(Mistral 7B)
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit= True,
+    bnb_4bit_quant_type= "nf4",
+    bnb_4bit_compute_dtype= torch.bfloat16,
+    bnb_4bit_use_double_quant= False,
+)
+model = AutoModelForCausalLM.from_pretrained(
+    base_model,
+    quantization_config=bnb_config,
+    device_map={"": 0}
+)
+model.config.use_cache = False # silence the warnings. Please re-enable for inference!
+model.config.pretraining_tp = 1
+model.gradient_checkpointing_enable()
+# Load tokenizer
+tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
+tokenizer.pad_token = tokenizer.eos_token
+tokenizer.add_eos_token = True
+tokenizer.add_bos_token, tokenizer.add_eos_token
+
+
+model = prepare_model_for_kbit_training(model)
+peft_config = LoraConfig(
+        r=16,
+        lora_alpha=16,
+        lora_dropout=0.05,
+        bias="none",
+        task_type="CAUSAL_LM",
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
+    )
+model = get_peft_model(model, peft_config)
 
 
 training_args = TrainingArguments(
     output_dir="land_mistral",
     evaluation_strategy="epoch",
-    num_train_epochs= 10000,
+    num_train_epochs= 100,
     learning_rate=2e-5,
     weight_decay=0.01,
     per_device_train_batch_size= 8,
@@ -125,17 +129,6 @@ training_args = TrainingArguments(
     push_to_hub=False,
 )
 
-# # trainer = SFTTrainer(
-# #     model=model,
-# #     peft_config=peft_config,
-# #     train_dataset=lm_dataset["train"],
-# #     eval_dataset=lm_dataset["test"],
-# #     data_collator=data_collator,
-# #     tokenizer=tokenizer,
-# #     args=training_args,
-# #     dataset_text_field="text",
-# #     packing= False,
-# # )
 trainer = Trainer(
     model=model,
     args=training_args,
@@ -143,8 +136,5 @@ trainer = Trainer(
     eval_dataset=lm_dataset["test"],
     data_collator=data_collator,
 )
-
-
-
 
 trainer.train()
