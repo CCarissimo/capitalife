@@ -74,7 +74,12 @@ training_args = TrainingArguments(
     push_to_hub=False,
 )
 
-print(torch.cuda.memory_allocated())
+t = torch.cuda.get_device_properties(0).total_memory
+r = torch.cuda.memory_reserved(0)
+a = torch.cuda.memory_allocated(0)
+f = r-a  # free inside reserved
+
+print(t, r, a, f)
 
 
 trainer = Trainer(
