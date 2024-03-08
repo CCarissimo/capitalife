@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer
 from datasets import load_dataset
 from transformers import DataCollatorForLanguageModeling
-
+from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
 
 dataset = load_dataset(path="data", split="train")
 tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
@@ -55,10 +55,27 @@ def group_texts(examples):
     }
     return result
 
-lm_dataset = tokenized_dataset.map(group_texts, batched=True, num_proc=4)
-
-
+lm_dataset = tokenized_dataset.map(group_texts, batched=True, num_proc=8)
 
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
+model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
+
+
+training_args = TrainingArguments(
+    output_dir="land_mistral",
+    evaluation_strategy="epoch",
+    learning_rate=2e-5,
+    weight_decay=0.01,
+    push_to_hub=False,
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=lm_dataset["train"],
+    data_collator=data_collator,
+)
+
+trainer.train()
