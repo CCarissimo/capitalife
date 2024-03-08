@@ -8,7 +8,9 @@ from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_pef
 from trl import SFTTrainer
 
 dataset = load_dataset(path="data", split="train")
-tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+# tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+tokenizer = AutoTokenizer.from_pretrained("TheBloke/Mistral-7B-v0.1-GGUF", model_file="mistral-7b-v0.1.Q4_K_M.gguf", model_type="mistral")
+
 
 
 remove_idx = []
@@ -72,7 +74,7 @@ bnb_config = BitsAndBytesConfig(
     bnb_4bit_use_double_quant= False,
 )
 
-model = AutoModelForCausalLM.from_pretrained("mistral-7b-v0.1.Q8_0.gguf")#, quantization_config=bnb_config)
+model = AutoModelForCausalLM.from_pretrained("TheBloke/Mistral-7B-v0.1-GGUF", model_file="mistral-7b-v0.1.Q4_K_M.gguf", model_type="mistral")#, quantization_config=bnb_config)
 model = prepare_model_for_kbit_training(model)
 peft_config = LoraConfig(
         r=16,
