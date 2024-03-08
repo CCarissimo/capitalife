@@ -1,5 +1,5 @@
 from transformers import AutoModelForCausalLM
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, BitsAndBytesConfig
 
 
 bnb_config = BitsAndBytesConfig(
