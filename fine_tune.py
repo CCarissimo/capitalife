@@ -4,9 +4,6 @@ from transformers import DataCollatorForLanguageModeling
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
 import os
 
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
-
-
 
 dataset = load_dataset(path="data", split="train")
 tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
@@ -45,7 +42,7 @@ tokenized_dataset = dataset.map(
     num_proc=8
 )
 
-block_size = 1024
+block_size = 128
 def group_texts(examples):
     # Concatenate all texts.
     concatenated_examples = {k: sum(examples[k], []) for k in examples.keys()}
@@ -86,5 +83,4 @@ trainer = Trainer(
 )
 
 torch.cuda.empty_cache()
-torch.cuda.memory_allocated()
 trainer.train()
