@@ -6,7 +6,7 @@ import os
 import torch
 
 dataset = load_dataset(path="data", split="train")
-tokenizer = AutoTokenizer.from_pretrained("TheBloke/CapybaraHermes-2.5-Mistral-7B-GGUF")
+tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
 
 
 remove_idx = []
@@ -63,8 +63,6 @@ lm_dataset = tokenized_dataset.map(group_texts, batched=True, num_proc=8)
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
-
-
 bnb_config = BitsAndBytesConfig(
     load_in_4bit= True,
     bnb_4bit_quant_type= "nf4",
@@ -72,7 +70,7 @@ bnb_config = BitsAndBytesConfig(
     bnb_4bit_use_double_quant= False,
 )
 
-model = AutoModelForCausalLM.from_pretrained("TheBloke/CapybaraHermes-2.5-Mistral-7B-GGUF", quantization_config=bnb_config)
+model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1", quantization_config=bnb_config)
 
 
 training_args = TrainingArguments(
