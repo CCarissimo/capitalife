@@ -54,7 +54,7 @@ prompt = args.prompt
 sequences = pipe(
     prompt,
     do_sample=True,
-    max_new_tokens=4000, 
+    max_new_tokens=1000, 
     temperature=0.7, 
     top_k=50, 
     top_p=0.95,
@@ -62,11 +62,3 @@ sequences = pipe(
 )
 print(sequences[0]['generated_text'])
 
-
-
-# model_inputs = tokenizer(["According to Nick Land, Bitcoin is"], return_tensors="pt").to("cuda")
-
-# generated_ids = model.generate(**model_inputs)
-
-# tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
-# print(tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0])
