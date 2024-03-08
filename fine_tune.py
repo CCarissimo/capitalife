@@ -114,16 +114,16 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 # model = get_peft_model(model, peft_config)
 
 
-# training_args = TrainingArguments(
-#     output_dir="land_mistral",
-#     evaluation_strategy="epoch",
-#     num_train_epochs= 1,
-#     learning_rate=2e-5,
-#     weight_decay=0.01,
-#     per_device_train_batch_size= 8,
-#     gradient_accumulation_steps= 2,
-#     push_to_hub=False,
-# )
+training_args = TrainingArguments(
+    output_dir="land_mistral",
+    evaluation_strategy="epoch",
+    num_train_epochs= 1,
+    learning_rate=2e-5,
+    weight_decay=0.01,
+    per_device_train_batch_size= 8,
+    gradient_accumulation_steps= 2,
+    push_to_hub=False,
+)
 
 # # trainer = SFTTrainer(
 # #     model=model,
@@ -136,46 +136,15 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 # #     dataset_text_field="text",
 # #     packing= False,
 # # )
-# trainer = Trainer(
-#     model=model,
-#     args=training_args,
-#     train_dataset=lm_dataset["train"],
-#     eval_dataset=lm_dataset["test"],
-#     data_collator=data_collator,
-# )
-
-# Hyperparameters should beadjusted based on the hardware you using
-training_arguments = TrainingArguments(
-    output_dir= "./results",
-    num_train_epochs= 1,
-    per_device_train_batch_size= 8,
-    gradient_accumulation_steps= 2,
-    optim = "paged_adamw_8bit",
-    save_steps= 5000,
-    logging_steps= 30,
-    learning_rate= 2e-4,
-    weight_decay= 0.001,
-    fp16= False,
-    bf16= False,
-    max_grad_norm= 0.3,
-    max_steps= -1,
-    warmup_ratio= 0.3,
-    group_by_length= True,
-    lr_scheduler_type= "constant",
-)
-# Setting sft parameters
-trainer = SFTTrainer(
+trainer = Trainer(
     model=model,
+    args=training_args,
     train_dataset=lm_dataset["train"],
     eval_dataset=lm_dataset["test"],
     data_collator=data_collator,
-    peft_config=peft_config,
-    max_seq_length= None,
-    dataset_text_field="text",
-    tokenizer=tokenizer,
-    args=training_arguments,
-    packing= False,
 )
+
+
 
 
 trainer.train()
