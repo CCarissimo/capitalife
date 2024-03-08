@@ -1,5 +1,5 @@
 from transformers import AutoModelForCausalLM
-from transformers import AutoTokenizer, BitsAndBytesConfig
+from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline
 import torch
 
 bnb_config = BitsAndBytesConfig(
@@ -13,15 +13,43 @@ bnb_config = BitsAndBytesConfig(
 
 model = AutoModelForCausalLM.from_pretrained(
 
-    "land_mistral/model", device_map="auto", quantization_config=bnb_config
-
+    "land_mistral/model",
+    load_in_4bit=True,
+    quantization_config=bnb_config,
+    torch_dtype=torch.bfloat16,
+    device_map="auto",
+    trust_remote_code=True,
 )
 
 
-tokenizer = AutoTokenizer.from_pretrained("land_mistral/model", padding_side="left")
-model_inputs = tokenizer(["According to Nick Land, Bitcoin is"], return_tensors="pt").to("cuda")
+tokenizer = AutoTokenizer.from_pretrained("land_mistral/model")
 
-generated_ids = model.generate(**model_inputs)
+pipe = pipeline(
+    "text-generation", 
+    model=model, 
+    tokenizer = tokenizer, 
+    torch_dtype=torch.bfloat16, 
+    device_map="auto"
+)
 
-tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
-print(tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0])
+prompt = "According to Nick Land, Bitcoin is"
+
+sequences = pipe(
+    prompt,
+    do_sample=True,
+    max_new_tokens=100, 
+    temperature=0.7, 
+    top_k=50, 
+    top_p=0.95,
+    num_return_sequences=1,
+)
+print(sequences[0]['generated_text'])
+
+
+
+# model_inputs = tokenizer(["According to Nick Land, Bitcoin is"], return_tensors="pt").to("cuda")
+
+# generated_ids = model.generate(**model_inputs)
+
+# tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+# print(tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0])
