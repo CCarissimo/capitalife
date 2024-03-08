@@ -2,8 +2,13 @@ from transformers import AutoModelForCausalLM
 from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline
 import torch
 from peft import PeftModel
-import sys
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--prompt', type=str,
+                    help='prompt')
+
+args = parser.parse_args()
 
 model = AutoModelForCausalLM.from_pretrained(
     "mistralai/Mistral-7B-v0.1" ,
@@ -44,7 +49,7 @@ pipe = pipeline(
     device_map="auto"
 )
 
-prompt = str(sys.argv[1])
+prompt = args.prompt
 
 sequences = pipe(
     prompt,
