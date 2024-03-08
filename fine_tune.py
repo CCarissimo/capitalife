@@ -45,7 +45,7 @@ tokenized_dataset = dataset.map(
     num_proc=8
 )
 
-block_size = 128
+block_size = 1024
 def group_texts(examples):
     # Concatenate all texts.
     concatenated_examples = {k: sum(examples[k], []) for k in examples.keys()}
