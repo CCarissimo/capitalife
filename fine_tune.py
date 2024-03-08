@@ -80,4 +80,5 @@ trainer = Trainer(
     data_collator=data_collator,
 )
 
+torch.cuda.empty_cache()
 trainer.train()
