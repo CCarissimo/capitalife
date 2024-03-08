@@ -36,13 +36,13 @@ dataset = dataset.train_test_split(test_size=0.1)
 dataset = dataset.flatten()
 dataset = dataset.map(
     listify,
-    num_proc=4
+    num_proc=8
 )
 
 tokenized_dataset = dataset.map(
     preprocess_function,
     batched=True,
-    num_proc=4
+    num_proc=8
 )
 
 block_size = 128
