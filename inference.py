@@ -54,7 +54,7 @@ prompt = args.prompt
 sequences = pipe(
     prompt,
     do_sample=True,
-    max_new_tokens=1000, 
+    max_new_tokens=500, 
     temperature=0.7, 
     top_k=50, 
     top_p=0.95,
