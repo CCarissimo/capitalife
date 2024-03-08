@@ -19,6 +19,7 @@ dataset = dataset.select(
     )
 )
 
+
 def listify(example):
     return {"text" : [example["text"]]}
 
@@ -26,7 +27,7 @@ def listify(example):
 def preprocess_function(examples):
     return tokenizer([" ".join(x) for x in examples["text"]])
 
-
+dataset = dataset.train_test_split(test_size=0.1)
 dataset = dataset.flatten()
 dataset = dataset.map(
     listify,
@@ -75,6 +76,7 @@ trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=lm_dataset["train"],
+    eval_dataset=lm_dataset["test"],
     data_collator=data_collator,
 )
 
