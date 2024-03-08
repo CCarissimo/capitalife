@@ -2,6 +2,7 @@ from transformers import AutoModelForCausalLM
 from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline
 import torch
 from peft import PeftModel
+import sys
 
 
 model = AutoModelForCausalLM.from_pretrained(
@@ -43,12 +44,12 @@ pipe = pipeline(
     device_map="auto"
 )
 
-prompt = "According to Nick Land, Bitcoin is"
+prompt = str(sys.argv[1])
 
 sequences = pipe(
     prompt,
     do_sample=True,
-    max_new_tokens=100, 
+    max_new_tokens=4000, 
     temperature=0.7, 
     top_k=50, 
     top_p=0.95,
