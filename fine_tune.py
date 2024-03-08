@@ -2,6 +2,11 @@ from transformers import AutoTokenizer
 from datasets import load_dataset
 from transformers import DataCollatorForLanguageModeling
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
+import os
+
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
+
+
 
 dataset = load_dataset(path="data", split="train")
 tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
