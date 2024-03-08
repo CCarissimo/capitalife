@@ -86,4 +86,5 @@ trainer = Trainer(
 )
 
 torch.cuda.empty_cache()
+torch.cuda.memory_allocated()
 trainer.train()
