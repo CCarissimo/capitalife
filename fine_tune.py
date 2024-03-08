@@ -10,6 +10,30 @@ from trl import SFTTrainer
 import os, torch, platform, warnings
 
 
+#MODEL PIPELINE
+
+base_model = "mistralai/Mistral-7B-v0.1" 
+# Load base model(Mistral 7B)
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit= True,
+    bnb_4bit_quant_type= "nf4",
+    bnb_4bit_compute_dtype= torch.bfloat16,
+    bnb_4bit_use_double_quant= False,
+)
+model = AutoModelForCausalLM.from_pretrained(
+    base_model,
+    quantization_config=bnb_config,
+    device_map={"": 0}
+)
+model.config.use_cache = False # silence the warnings. Please re-enable for inference!
+model.config.pretraining_tp = 1
+model.gradient_checkpointing_enable()
+# Load tokenizer
+tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
+tokenizer.pad_token = tokenizer.eos_token
+tokenizer.add_eos_token = True
+tokenizer.add_bos_token, tokenizer.add_eos_token
+
 #DATA PIPELINE
 
 # filenames = [x for x in os.listdir("txtfiles/")]
@@ -36,7 +60,6 @@ dataset = dataset.select(
 
 def listify(example):
     return {"text" : [example["text"]]}
-
 
 def preprocess_function(examples):
     return tokenizer([" ".join(x) for x in examples["text"]])
@@ -74,36 +97,6 @@ lm_dataset = tokenized_dataset.map(group_texts, batched=True, num_proc=8)
 
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
-
-
-
-#MODEL PIPELINE
-
-
-
-
-
-base_model = "mistralai/Mistral-7B-v0.1" 
-# Load base model(Mistral 7B)
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit= True,
-    bnb_4bit_quant_type= "nf4",
-    bnb_4bit_compute_dtype= torch.bfloat16,
-    bnb_4bit_use_double_quant= False,
-)
-model = AutoModelForCausalLM.from_pretrained(
-    base_model,
-    quantization_config=bnb_config,
-    device_map={"": 0}
-)
-model.config.use_cache = False # silence the warnings. Please re-enable for inference!
-model.config.pretraining_tp = 1
-model.gradient_checkpointing_enable()
-# Load tokenizer
-tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
-tokenizer.pad_token = tokenizer.eos_token
-tokenizer.add_eos_token = True
-tokenizer.add_bos_token, tokenizer.add_eos_token
 
 
 model = prepare_model_for_kbit_training(model)
