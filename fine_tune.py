@@ -104,6 +104,7 @@ trainer = SFTTrainer(
     data_collator=data_collator,
     tokenizer=tokenizer,
     args=training_args,
+    dataset_text_field="text",
     packing= False,
 )
 # trainer = Trainer(
