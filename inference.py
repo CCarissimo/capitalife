@@ -32,7 +32,8 @@ model = model.merge_and_unload()
 # )
 
 
-tokenizer = AutoTokenizer.from_pretrained("land_mistral/model")
+tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+tokenizer.pad_token = tokenizer.eos_token
 
 pipe = pipeline(
     "text-generation", 
