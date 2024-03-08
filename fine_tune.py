@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer
 from datasets import load_dataset
-from transformers import DataCollatorForLanguageModeling
+from transformers import DataCollatorForLanguageModeling, BitsAndBytesConfig
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
 import os
 import torch
