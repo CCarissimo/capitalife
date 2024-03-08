@@ -6,7 +6,7 @@ import os
 import torch
 
 dataset = load_dataset(path="data", split="train")
-tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+tokenizer = AutoTokenizer.from_pretrained("TheBloke/CapybaraHermes-2.5-Mistral-7B-GGUF")
 
 
 remove_idx = []
@@ -63,7 +63,7 @@ lm_dataset = tokenized_dataset.map(group_texts, batched=True, num_proc=8)
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
-model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
+model = AutoModelForCausalLM.from_pretrained("TheBloke/CapybaraHermes-2.5-Mistral-7B-GGUF")
 
 
 training_args = TrainingArguments(
@@ -73,14 +73,6 @@ training_args = TrainingArguments(
     weight_decay=0.01,
     push_to_hub=False,
 )
-
-t = torch.cuda.get_device_properties(0).total_memory
-r = torch.cuda.memory_reserved(0)
-a = torch.cuda.memory_allocated(0)
-f = r-a  # free inside reserved
-
-print(t, r, a, f)
-
 
 trainer = Trainer(
     model=model,
