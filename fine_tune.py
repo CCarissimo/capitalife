@@ -63,7 +63,16 @@ lm_dataset = tokenized_dataset.map(group_texts, batched=True, num_proc=8)
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
-model = AutoModelForCausalLM.from_pretrained("TheBloke/CapybaraHermes-2.5-Mistral-7B-GGUF")
+
+
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit= True,
+    bnb_4bit_quant_type= "nf4",
+    bnb_4bit_compute_dtype= torch.bfloat16,
+    bnb_4bit_use_double_quant= False,
+)
+
+model = AutoModelForCausalLM.from_pretrained("TheBloke/CapybaraHermes-2.5-Mistral-7B-GGUF", quantization_config=bnb_config)
 
 
 training_args = TrainingArguments(
