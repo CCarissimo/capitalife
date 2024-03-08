@@ -31,6 +31,7 @@ tokenizer.pad_token = tokenizer.eos_token
 tokenizer.add_eos_token = True
 tokenizer.add_bos_token, tokenizer.add_eos_token
 
+
 model = prepare_model_for_kbit_training(model)
 peft_config = LoraConfig(
         r=16,
@@ -42,6 +43,8 @@ peft_config = LoraConfig(
     )
 model = get_peft_model(model, peft_config)
 
+
+dataset = load_dataset(path="data", split="train")
 remove_idx = []
 for i, data in enumerate(dataset):
     if data["text"] == '':
