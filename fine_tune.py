@@ -76,8 +76,11 @@ model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1", quanti
 training_args = TrainingArguments(
     output_dir="land_mistral",
     evaluation_strategy="epoch",
+    num_train_epochs= 1,
     learning_rate=2e-5,
     weight_decay=0.01,
+    per_device_train_batch_size= 8,
+    gradient_accumulation_steps= 2,
     push_to_hub=False,
 )
 
