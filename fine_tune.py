@@ -70,7 +70,18 @@ bnb_config = BitsAndBytesConfig(
     bnb_4bit_use_double_quant= False,
 )
 
-model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
+model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1", quantization_config=bnb_config)
+model = prepare_model_for_kbit_training(model)
+peft_config = LoraConfig(
+        r=16,
+        lora_alpha=16,
+        lora_dropout=0.05,
+        bias="none",
+        task_type="CAUSAL_LM",
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
+    )
+model = get_peft_model(model, peft_config)
+
 
 training_args = TrainingArguments(
     output_dir="land_mistral",
@@ -83,13 +94,23 @@ training_args = TrainingArguments(
     push_to_hub=False,
 )
 
-trainer = Trainer(
+trainer = SFTTrainer(
     model=model,
-    args=training_args,
+    peft_config=peft_config,
     train_dataset=lm_dataset["train"],
     eval_dataset=lm_dataset["test"],
     data_collator=data_collator,
+    tokenizer=tokenizer,
+    args=training_args,
+    packing= False,
 )
+# trainer = Trainer(
+#     model=model,
+#     args=training_args,
+#     train_dataset=lm_dataset["train"],
+#     eval_dataset=lm_dataset["test"],
+#     data_collator=data_collator,
+# )
 
 
 torch.cuda.empty_cache()
