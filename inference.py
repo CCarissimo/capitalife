@@ -1,25 +1,35 @@
 from transformers import AutoModelForCausalLM
 from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline
 import torch
-
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit= True,
-    bnb_4bit_quant_type= "nf4",
-    bnb_4bit_compute_dtype= torch.bfloat16,
-    bnb_4bit_use_double_quant= False,
-)
-
+from peft import PeftModel
 
 
 model = AutoModelForCausalLM.from_pretrained(
-
-    "land_mistral/model",
-    load_in_4bit=True,
-    quantization_config=bnb_config,
+    "mistralai/Mistral-7B-v0.1" ,
     torch_dtype=torch.bfloat16,
     device_map="auto",
     trust_remote_code=True,
 )
+model = PeftModel.from_pretrained(model, "land_mistral/model")
+model = model.merge_and_unload()
+
+# bnb_config = BitsAndBytesConfig(
+#     load_in_4bit= True,
+#     bnb_4bit_quant_type= "nf4",
+#     bnb_4bit_compute_dtype= torch.bfloat16,
+#     bnb_4bit_use_double_quant= False,
+# )
+
+
+
+# model = AutoModelForCausalLM.from_pretrained(
+
+#     "land_mistral/model",
+#     quantization_config=bnb_config,
+#     torch_dtype=torch.bfloat16,
+#     device_map="auto",
+#     trust_remote_code=True,
+# )
 
 
 tokenizer = AutoTokenizer.from_pretrained("land_mistral/model")
