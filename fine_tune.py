@@ -9,6 +9,7 @@ from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_pef
 from trl import SFTTrainer
 import os, torch, platform, warnings
 
+base_model = "mistralai/Mistral-7B-v0.1" 
 # Load base model(Mistral 7B)
 bnb_config = BitsAndBytesConfig(
     load_in_4bit= True,
