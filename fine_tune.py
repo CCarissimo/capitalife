@@ -70,8 +70,7 @@ bnb_config = BitsAndBytesConfig(
     bnb_4bit_use_double_quant= False,
 )
 
-model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1", quantization_config=bnb_config)
-
+model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
 
 training_args = TrainingArguments(
     output_dir="land_mistral",
