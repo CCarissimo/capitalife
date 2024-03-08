@@ -1,30 +1,41 @@
 # importing required modules
 from PyPDF2 import PdfReader
+import glob
+import os
 
-# creating a pdf reader object
-reader = PdfReader('texts/TheDarkEnlightenment.pdf')
+for file in glob.glob("texts/*"):
+    print(file)
 
-# printing number of pages in pdf file
-print(len(reader.pages))
+    path = file.split(".pdf")[0]
 
-# getting a specific page from the pdf file
-page = reader.pages[0]
+    if os.path.exists(f"{path}.txt"):
+        continue
 
-# extracting text from page
-text = page.extract_text()
-print(text)
+    name = path.split("/")[-1]
 
-f = open("data/dataset.txt", "a")
+    f = open(f"data/{name}.txt", "a")
 
-for i in range(len(reader.pages)):
+    # creating a pdf reader object
+    reader = PdfReader(file)
+
+    # printing number of pages in pdf file
+    print(len(reader.pages))
+
     # getting a specific page from the pdf file
-    page = reader.pages[i]
+    page = reader.pages[0]
 
     # extracting text from page
     text = page.extract_text()
+    print(text)
 
-    f.write(text)
+    for i in range(len(reader.pages)):
+        # getting a specific page from the pdf file
+        page = reader.pages[i]
 
-f.close()
+        # extracting text from page
+        text = page.extract_text()
 
+        f.write(text)
+
+    f.close()
 
