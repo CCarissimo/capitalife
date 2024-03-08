@@ -74,6 +74,9 @@ training_args = TrainingArguments(
     push_to_hub=False,
 )
 
+print(torch.cuda.memory_allocated())
+
+
 trainer = Trainer(
     model=model,
     args=training_args,
@@ -83,6 +86,5 @@ trainer = Trainer(
 )
 
 
-print(torch.cuda.memory_allocated())
 torch.cuda.empty_cache()
 trainer.train()
