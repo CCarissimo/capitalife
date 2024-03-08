@@ -117,7 +117,7 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 training_args = TrainingArguments(
     output_dir="land_mistral",
     evaluation_strategy="epoch",
-    num_train_epochs= 1,
+    num_train_epochs= 10000,
     learning_rate=2e-5,
     weight_decay=0.01,
     per_device_train_batch_size= 8,
