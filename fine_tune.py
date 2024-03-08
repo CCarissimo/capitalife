@@ -4,6 +4,7 @@ from transformers import DataCollatorForLanguageModeling, BitsAndBytesConfig
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
 import os
 import torch
+from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
 
 dataset = load_dataset(path="data", split="train")
 tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
