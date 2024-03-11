@@ -131,4 +131,4 @@ trainer = Trainer(
 )
 
 trainer.train()
-trainer.save_model("land_mistral/model")
+trainer.save_model("expanded_mistral/model")
