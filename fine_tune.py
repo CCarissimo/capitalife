@@ -112,7 +112,7 @@ model = get_peft_model(model, peft_config)
 
 
 training_args = TrainingArguments(
-    output_dir="land_mistral",
+    output_dir="expanded_mistral",
     evaluation_strategy="epoch",
     num_train_epochs= 200,
     learning_rate=2e-5,
