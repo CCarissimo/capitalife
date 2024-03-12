@@ -5,8 +5,8 @@ from peft import PeftModel
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--prompt', type=str,
-                    help='prompt')
+parser.add_argument('--prompt', type=str, help='prompt')
+parser.add_argument('--model', type=str, help='model')
 
 args = parser.parse_args()
 
@@ -16,7 +16,7 @@ model = AutoModelForCausalLM.from_pretrained(
     device_map="auto",
     trust_remote_code=True,
 )
-model = PeftModel.from_pretrained(model, "land_mistral/model")
+model = PeftModel.from_pretrained(model, args.model)
 model = model.merge_and_unload()
 
 # bnb_config = BitsAndBytesConfig(
