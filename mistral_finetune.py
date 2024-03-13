@@ -19,12 +19,10 @@ model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
 model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
 model.config.pretraining_tp = 1
 model.gradient_checkpointing_enable()
-# Load tokenizer
-tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
-tokenizer.pad_token = tokenizer.eos_token
-tokenizer.add_eos_token = True
-tokenizer.add_bos_token, tokenizer.add_eos_token
-tokenizer.padding_side = 'right'
+
+
+model = PeftModel.from_pretrained(model, "land_mistral/checkpoint-12000")
+model = model.merge_and_unload()
 
 model = prepare_model_for_kbit_training(model)
 peft_config = LoraConfig(
@@ -36,6 +34,14 @@ peft_config = LoraConfig(
         target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
     )
 model = get_peft_model(model, peft_config)
+
+# Load tokenizer
+tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
+tokenizer.pad_token = tokenizer.eos_token
+tokenizer.add_eos_token = True
+tokenizer.add_bos_token, tokenizer.add_eos_token
+tokenizer.padding_side = 'right'
+
 
 
 # Training Arguments
