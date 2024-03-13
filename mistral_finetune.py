@@ -24,7 +24,7 @@ tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.add_eos_token = True
 tokenizer.add_bos_token, tokenizer.add_eos_token
-
+tokenizer.padding_side = 'right'
 
 model = prepare_model_for_kbit_training(model)
 peft_config = LoraConfig(
@@ -42,7 +42,7 @@ model = get_peft_model(model, peft_config)
 # Hyperparameters should beadjusted based on the hardware you using
 training_arguments = TrainingArguments(
     output_dir= "./results",
-    num_train_epochs= 100,
+    num_train_epochs= 1,
     per_device_train_batch_size= 8,
     gradient_accumulation_steps= 2,
     save_steps= 5000,
