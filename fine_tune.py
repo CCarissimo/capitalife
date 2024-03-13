@@ -2,7 +2,8 @@ from transformers import AutoTokenizer
 from datasets import load_dataset
 from transformers import DataCollatorForLanguageModeling, BitsAndBytesConfig
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig,HfArgumentParser,TrainingArguments,pipeline, logging, TextStreamer
+from transformers import AutoTokenizer, BitsAndBytesConfig, HfArgumentParser, pipeline, logging, TextStreamer
+from accelerate import load_checkpoint_and_dispatch, dispatch_model
 import os
 import torch
 from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
@@ -25,7 +26,12 @@ bnb_config = BitsAndBytesConfig(
 #     quantization_config=bnb_config,
 #     device_map={"": 0}
 # )
-model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
+model = dispatch_model(
+    base_model,
+    checkpoint=checkpoint_file,
+    device_map="auto"
+)
+
 
 model.config.use_cache = False # silence the warnings. Please re-enable for inference!
 model.config.pretraining_tp = 1
