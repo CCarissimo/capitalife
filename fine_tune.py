@@ -3,7 +3,6 @@ from datasets import load_dataset
 from transformers import DataCollatorForLanguageModeling, BitsAndBytesConfig
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
 from transformers import AutoTokenizer, BitsAndBytesConfig, HfArgumentParser, pipeline, logging, TextStreamer
-from accelerate import load_checkpoint_and_dispatch, dispatch_model
 import os
 import torch
 from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
@@ -26,10 +25,9 @@ bnb_config = BitsAndBytesConfig(
 #     quantization_config=bnb_config,
 #     device_map={"": 0}
 # )
-model = dispatch_model(
-    base_model,
-    device_map="auto"
-)
+
+model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
+model = accelerate.dispatch_model(model, device_map="auto")
 
 
 model.config.use_cache = False # silence the warnings. Please re-enable for inference!
@@ -48,6 +46,7 @@ tokenizer.add_bos_token, tokenizer.add_eos_token
 #     for fname in filenames:
 #         with open("txtfiles/" + fname) as infile:
 #             outfile.write(infile.read())
+
 
 
             
@@ -106,20 +105,20 @@ tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
-# model = prepare_model_for_kbit_training(model)
-# peft_config = LoraConfig(
-#         r=16,
-#         lora_alpha=16,
-#         lora_dropout=0.05,
-#         bias="none",
-#         task_type="CAUSAL_LM",
-#         target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
-#     )
-# model = get_peft_model(model, peft_config)
+model = prepare_model_for_kbit_training(model)
+peft_config = LoraConfig(
+        r=16,
+        lora_alpha=16,
+        lora_dropout=0.05,
+        bias="none",
+        task_type="CAUSAL_LM",
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
+    )
+model = get_peft_model(model, peft_config)
 
 
 training_args = TrainingArguments(
-    output_dir="expanded_mistral",
+    output_dir="expanded_mistral/model",
     evaluation_strategy="epoch",
     num_train_epochs= 200,
     learning_rate=2e-5,
