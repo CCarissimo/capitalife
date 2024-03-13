@@ -28,7 +28,6 @@ bnb_config = BitsAndBytesConfig(
 # )
 model = dispatch_model(
     base_model,
-    checkpoint=checkpoint_file,
     device_map="auto"
 )
 
