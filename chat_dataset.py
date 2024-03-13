@@ -78,3 +78,9 @@ def replace_with_random_line(example):
 new_dataset = dataset.map(replace_with_random_line)
 
 print(new_dataset.data["question"][0], new_dataset.data["solution"][0])
+
+dataset.save_to_disk("data/chat_capital_dataset")
+
+"""
+To Load the Dataset: datasets = load_from_disk('data/chat_capital_dataset')
+"""

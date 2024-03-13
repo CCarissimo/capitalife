@@ -1,7 +1,11 @@
+"""
+source: https://gathnex.medium.com/mistral-7b-fine-tuning-a-step-by-step-guide-52122cdbeca8
+"""
+
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig,HfArgumentParser,TrainingArguments,pipeline, logging, TextStreamer
 from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
 import os, torch, wandb, platform, warnings
-from datasets import load_dataset
+from datasets import load_dataset, load_from_disk
 from trl import SFTTrainer
 from huggingface_hub import notebook_login
 #Use a sharded model to fine-tune in the free version of Google Colab.
@@ -10,6 +14,7 @@ dataset_name, new_model = "gathnex/Gath_baize", "gathnex/Gath_mistral_7b"
 
 # Loading a Gath_baize dataset
 dataset = load_dataset(dataset_name, split="train")
+# dataset = load_from_disk("data/chat_capital_dataset")  # use this one for local dataset!
 dataset["chat_sample"][0]
 
 # Load base model(Mistral 7B)
@@ -24,7 +29,7 @@ model = AutoModelForCausalLM.from_pretrained(
     quantization_config=bnb_config,
     device_map={"": 0}
 )
-model.config.use_cache = False # silence the warnings. Please re-enable for inference!
+model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
 model.config.pretraining_tp = 1
 model.gradient_checkpointing_enable()
 # Load tokenizer
