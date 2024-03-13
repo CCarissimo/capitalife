@@ -3,6 +3,7 @@ from datasets import load_dataset
 from transformers import DataCollatorForLanguageModeling, BitsAndBytesConfig
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
 from transformers import AutoTokenizer, BitsAndBytesConfig, HfArgumentParser, pipeline, logging, TextStreamer
+from accelerate import load_checkpoint_and_dispatch, dispatch_model
 import os
 import torch
 from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
