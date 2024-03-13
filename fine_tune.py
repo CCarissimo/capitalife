@@ -14,32 +14,44 @@ import os, torch, platform, warnings
 #MODEL PIPELINE
 
 base_model = "mistralai/Mistral-7B-v0.1" 
-# Load base model(Mistral 7B)
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit= True,
-    bnb_4bit_quant_type= "nf4",
-    bnb_4bit_compute_dtype= torch.bfloat16,
-    bnb_4bit_use_double_quant= False,
-)
+
+# bnb_config = BitsAndBytesConfig(
+#     load_in_8bit= True,
+#     bnb_4bit_quant_type= "nf4",
+#     bnb_4bit_compute_dtype= torch.bfloat16,
+#     bnb_4bit_use_double_quant= False,
+# )
 # model = AutoModelForCausalLM.from_pretrained(
 #     base_model,
 #     quantization_config=bnb_config,
 #     device_map={"": 0}
 # )
-model = dispatch_model(
-    base_model,
-    device_map="auto"
-)
 
+model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
 
 model.config.use_cache = False # silence the warnings. Please re-enable for inference!
 model.config.pretraining_tp = 1
 model.gradient_checkpointing_enable()
+
+model = prepare_model_for_kbit_training(model)
+peft_config = LoraConfig(
+        r=16,
+        lora_alpha=16,
+        lora_dropout=0.05,
+        bias="none",
+        task_type="CAUSAL_LM",
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
+    )
+model = get_peft_model(model, peft_config)
+
+
+
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.add_eos_token = True
 tokenizer.add_bos_token, tokenizer.add_eos_token
+
 
 #DATA PIPELINE
 
@@ -49,10 +61,10 @@ tokenizer.add_bos_token, tokenizer.add_eos_token
 #         with open("txtfiles/" + fname) as infile:
 #             outfile.write(infile.read())
 
-
-            
+           
 dataset = load_dataset(path="data", split="train")
 # dataset = load_from_disk("data/chat_capital_dataset")  # use this one for local chat dataset!
+
 remove_idx = []
 for i, data in enumerate(dataset):
     if data["text"] == '':
@@ -102,25 +114,11 @@ def group_texts(examples):
     return result
 
 lm_dataset = tokenized_dataset.map(group_texts, batched=True, num_proc=8)
-
-tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
-# model = prepare_model_for_kbit_training(model)
-# peft_config = LoraConfig(
-#         r=16,
-#         lora_alpha=16,
-#         lora_dropout=0.05,
-#         bias="none",
-#         task_type="CAUSAL_LM",
-#         target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
-#     )
-# model = get_peft_model(model, peft_config)
-
-
 training_args = TrainingArguments(
-    output_dir="expanded_mistral",
+    output_dir="expanded_mistral/model",
     evaluation_strategy="epoch",
     num_train_epochs= 200,
     learning_rate=2e-5,
