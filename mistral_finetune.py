@@ -15,7 +15,6 @@ dataset_name, new_model = "gathnex/Gath_baize", "gathnex/Gath_mistral_7b"
 # Loading a Gath_baize dataset
 dataset = load_dataset(dataset_name, split="train")
 # dataset = load_from_disk("data/chat_capital_dataset")  # use this one for local dataset!
-dataset["chat_sample"][0]
 
 # Load base model(Mistral 7B)
 bnb_config = BitsAndBytesConfig(
@@ -36,8 +35,6 @@ model.gradient_checkpointing_enable()
 tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.add_eos_token = True
-tokenizer.add_bos_token, tokenizer.add_eos_token
-
 
 model = prepare_model_for_kbit_training(model)
 peft_config = LoraConfig(
@@ -86,7 +83,7 @@ trainer = SFTTrainer(
 
 trainer.train()
 # Save the fine-tuned model
-trainer.model.save_pretrained(new_model)
+trainer.save_model(new_model)
 wandb.finish()
 model.config.use_cache = True
 model.eval()
