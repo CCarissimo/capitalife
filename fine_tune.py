@@ -28,7 +28,7 @@ bnb_config = BitsAndBytesConfig(
 # )
 
 model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
-model = accelerate.dispatch_model(model, device_map="auto")
+model = dispatch_model(model, device_map="auto")
 
 
 model.config.use_cache = False # silence the warnings. Please re-enable for inference!
