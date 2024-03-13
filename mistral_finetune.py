@@ -1,7 +1,3 @@
-"""
-source: https://gathnex.medium.com/mistral-7b-fine-tuning-a-step-by-step-guide-52122cdbeca8
-"""
-
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig,HfArgumentParser,TrainingArguments,pipeline, logging, TextStreamer
 from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
 import os, torch, wandb, platform, warnings
@@ -17,18 +13,8 @@ dataset = load_dataset(dataset_name, split="train")
 # dataset = load_from_disk("data/chat_capital_dataset")  # use this one for local dataset!
 dataset["chat_sample"][0]
 
-# Load base model(Mistral 7B)
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit= True,
-    bnb_4bit_quant_type= "nf4",
-    bnb_4bit_compute_dtype= torch.bfloat16,
-    bnb_4bit_use_double_quant= False,
-)
-model = AutoModelForCausalLM.from_pretrained(
-    base_model,
-    quantization_config=bnb_config,
-    device_map={"": 0}
-)
+model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
+
 model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
 model.config.pretraining_tp = 1
 model.gradient_checkpointing_enable()
@@ -55,10 +41,9 @@ model = get_peft_model(model, peft_config)
 # Hyperparameters should beadjusted based on the hardware you using
 training_arguments = TrainingArguments(
     output_dir= "./results",
-    num_train_epochs= 1,
+    num_train_epochs= 100,
     per_device_train_batch_size= 8,
     gradient_accumulation_steps= 2,
-    optim = "paged_adamw_8bit",         # are we using quantized version???
     save_steps= 5000,
     logging_steps= 30,
     learning_rate= 2e-4,
@@ -70,7 +55,6 @@ training_arguments = TrainingArguments(
     warmup_ratio= 0.3,
     group_by_length= True,
     lr_scheduler_type= "constant",
-    # report_to="wandb"
 )
 # Setting sft parameters
 trainer = SFTTrainer(
@@ -87,7 +71,7 @@ trainer = SFTTrainer(
 trainer.train()
 # Save the fine-tuned model
 trainer.model.save_pretrained(new_model)
-wandb.finish()
+
 model.config.use_cache = True
 model.eval()
 

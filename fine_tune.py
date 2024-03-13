@@ -14,13 +14,13 @@ import os, torch, platform, warnings
 #MODEL PIPELINE
 
 base_model = "mistralai/Mistral-7B-v0.1" 
-# Load base model(Mistral 7B)
-bnb_config = BitsAndBytesConfig(
-    load_in_8bit= True,
-    bnb_4bit_quant_type= "nf4",
-    bnb_4bit_compute_dtype= torch.bfloat16,
-    bnb_4bit_use_double_quant= False,
-)
+
+# bnb_config = BitsAndBytesConfig(
+#     load_in_8bit= True,
+#     bnb_4bit_quant_type= "nf4",
+#     bnb_4bit_compute_dtype= torch.bfloat16,
+#     bnb_4bit_use_double_quant= False,
+# )
 # model = AutoModelForCausalLM.from_pretrained(
 #     base_model,
 #     quantization_config=bnb_config,
@@ -53,10 +53,6 @@ tokenizer.add_eos_token = True
 tokenizer.add_bos_token, tokenizer.add_eos_token
 
 
-
-
-
-
 #DATA PIPELINE
 
 # filenames = [x for x in os.listdir("txtfiles/")]
@@ -65,11 +61,10 @@ tokenizer.add_bos_token, tokenizer.add_eos_token
 #         with open("txtfiles/" + fname) as infile:
 #             outfile.write(infile.read())
 
-
-
-            
+           
 dataset = load_dataset(path="data", split="train")
 # dataset = load_from_disk("data/chat_capital_dataset")  # use this one for local chat dataset!
+
 remove_idx = []
 for i, data in enumerate(dataset):
     if data["text"] == '':
@@ -119,8 +114,6 @@ def group_texts(examples):
     return result
 
 lm_dataset = tokenized_dataset.map(group_texts, batched=True, num_proc=8)
-
-tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
