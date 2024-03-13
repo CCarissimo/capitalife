@@ -51,6 +51,7 @@ tokenizer.add_bos_token, tokenizer.add_eos_token
 
             
 dataset = load_dataset(path="data", split="train")
+# dataset = load_from_disk("data/chat_capital_dataset")  # use this one for local chat dataset!
 remove_idx = []
 for i, data in enumerate(dataset):
     if data["text"] == '':
