@@ -20,11 +20,13 @@ bnb_config = BitsAndBytesConfig(
     bnb_4bit_compute_dtype= torch.bfloat16,
     bnb_4bit_use_double_quant= False,
 )
-model = AutoModelForCausalLM.from_pretrained(
-    base_model,
-    quantization_config=bnb_config,
-    device_map={"": 0}
-)
+# model = AutoModelForCausalLM.from_pretrained(
+#     base_model,
+#     quantization_config=bnb_config,
+#     device_map={"": 0}
+# )
+model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
+
 model.config.use_cache = False # silence the warnings. Please re-enable for inference!
 model.config.pretraining_tp = 1
 model.gradient_checkpointing_enable()
@@ -99,16 +101,16 @@ tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
-model = prepare_model_for_kbit_training(model)
-peft_config = LoraConfig(
-        r=16,
-        lora_alpha=16,
-        lora_dropout=0.05,
-        bias="none",
-        task_type="CAUSAL_LM",
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
-    )
-model = get_peft_model(model, peft_config)
+# model = prepare_model_for_kbit_training(model)
+# peft_config = LoraConfig(
+#         r=16,
+#         lora_alpha=16,
+#         lora_dropout=0.05,
+#         bias="none",
+#         task_type="CAUSAL_LM",
+#         target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
+#     )
+# model = get_peft_model(model, peft_config)
 
 
 training_args = TrainingArguments(
