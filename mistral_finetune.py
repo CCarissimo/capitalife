@@ -4,6 +4,7 @@ import os, torch, platform, warnings
 from datasets import load_dataset, load_from_disk
 from trl import SFTTrainer
 from huggingface_hub import notebook_login
+from transformers import DataCollatorForLanguageModeling
 
 
 #Use a sharded model to fine-tune in the free version of Google Colab.
@@ -41,6 +42,7 @@ tokenizer.pad_token = tokenizer.eos_token
 tokenizer.add_eos_token = True
 tokenizer.add_bos_token, tokenizer.add_eos_token
 tokenizer.padding_side = 'right'
+data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
 
@@ -73,6 +75,7 @@ trainer = SFTTrainer(
     tokenizer=tokenizer,
     args=training_arguments,
     packing= False,
+    data_collator=data_collator,
 )
 
 trainer.train()
