@@ -4,6 +4,7 @@ import os, torch, platform, warnings
 from datasets import load_dataset, load_from_disk
 from trl import SFTTrainer
 from huggingface_hub import notebook_login
+from transformers import DataCollatorForLanguageModeling
 
 
 #Use a sharded model to fine-tune in the free version of Google Colab.
