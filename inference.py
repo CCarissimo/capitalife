@@ -11,7 +11,7 @@ parser.add_argument('--model', type=str, help='model')
 args = parser.parse_args()
 
 model = AutoModelForCausalLM.from_pretrained(
-    "mistralai/Mistral-7B-v0.1" ,
+    "mistralai/Mistral-7B-Instruct-v0.2" ,
     torch_dtype=torch.bfloat16,
     device_map="auto",
     trust_remote_code=True,
@@ -37,7 +37,7 @@ model = model.merge_and_unload()
 # )
 
 
-tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-Instruct-7B-v0.2")
 tokenizer.pad_token = tokenizer.eos_token
 
 pipe = pipeline(
