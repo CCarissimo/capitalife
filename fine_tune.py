@@ -13,7 +13,8 @@ import os, torch, platform, warnings
 
 #MODEL PIPELINE
 
-base_model = "mistralai/Mistral-7B-v0.1" 
+# base_model = "mistralai/Mistral-7B-v0.1"
+base_model = "mistralai/Mistral-7B-Instruct-v0.2"
 
 # bnb_config = BitsAndBytesConfig(
 #     load_in_8bit= True,
