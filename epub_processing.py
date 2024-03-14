@@ -1,8 +1,8 @@
 # importing required modules
-import textract
+# import textract
 import glob
 import os
-from ebooklib import epub
+# from ebooklib import epub
 from epub2txt import epub2txt
 
 # file = 'texts/(Routledge Classics) Georg Simmel, David Frisby, Charles Lemert - The Philosophy of Money-Routledge (2011).epub'
@@ -19,21 +19,25 @@ Fanged Noumena needed utf8 encoding when going from extraction to string, writin
 capital v1, v2, v3 worked with epub2txt directly
 """
 
-for file in glob.glob("texts/*"):
+for epub_file in glob.glob("epubs/*"):
 
-    path = file.split(".epub")[0]
+    path = epub_file.split(".epub")[0]
     name = path.split("/")[-1]
 
-    if os.path.isfile(f"data/{name}.txt"):
+    if not epub_file.endswith('.epub'):
+        print("skipping: ", path)
+        continue
+    
+    
+    if os.path.isfile(f"txtfiles/{name}.txt"):
         pass
-
     else:
-        print(file)
+        print("converting: ", epub_file)
 
-        text = epub2txt(file)
+        text = epub2txt(epub_file)
         # text = textract.process(file, extension="epub") # returns bytes string sometimes
-        print(text)
-        f = open(f"data/{name}.txt", "a")
+        # print(text)
+        f = open(f"txtfiles/{name}.txt", "a")
 
         f.write(text)
 
