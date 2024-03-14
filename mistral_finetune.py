@@ -55,18 +55,27 @@ training_arguments = TrainingArguments(
     gradient_accumulation_steps= 2,
     save_steps= 5000,
     logging_steps= 30,
-    learning_rate= 2e-5,
+    learning_rate= 2e-4,
+    weight_decay= 0.001,
+    fp16= False,
+    bf16= False,
+    max_grad_norm= 0.3,
+    max_steps= -1,
+    warmup_ratio= 0.3,
+    group_by_length= True,
+    lr_scheduler_type= "constant",
 )
 # Setting sft parameters
 trainer = SFTTrainer(
     model=model,
     train_dataset=dataset,
     peft_config=peft_config,
-    max_seq_length= 2048,
+    max_seq_length= 1024,
     dataset_text_field="chat_sample",
     args=training_arguments,
     packing= False,
     data_collator=data_collator,
+    tokenizer=tokenizer
 )
 
 trainer.train()
