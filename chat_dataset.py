@@ -59,6 +59,32 @@ def split_into_sentences(text: str) -> list[str]:
     return sentences
 
 
+def create_prompt_formats(sample):
+    """
+    Format various fields of the sample ('instruction','output')
+    Then concatenate them using two newline characters
+    :param sample: Sample dictionnary
+    """
+    INTRO_BLURB = "Below is an instruction that describes a task. Write a response that appropriately completes the request."
+    INSTRUCTION_KEY = "### Instruct: Summarize the below conversation."
+    RESPONSE_KEY = "### Output:"
+    END_KEY = "### End"
+
+    blurb = f"\n{INTRO_BLURB}"
+    instruction = f"{INSTRUCTION_KEY}"
+    input_context = f"{sample['dialogue']}" if sample["dialogue"] else None
+    response = f"{RESPONSE_KEY}\n{sample['summary']}"
+    end = f"{END_KEY}"
+
+    parts = [part for part in [blurb, instruction, input_context, response, end] if part]
+
+    formatted_prompt = "\n\n".join(parts)
+    sample["text"] = formatted_prompt
+
+    return sample
+
+
+
 dataset = load_dataset("derek-thomas/ScienceQA", split="train")
 print(dataset["question"][0])
 
