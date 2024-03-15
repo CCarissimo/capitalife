@@ -37,7 +37,7 @@ model = model.merge_and_unload()
 # )
 
 
-tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-Instruct-7B-v0.2")
+tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
 tokenizer.pad_token = tokenizer.eos_token
 
 pipe = pipeline(
