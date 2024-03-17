@@ -108,7 +108,7 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
 training_args = TrainingArguments(
-    output_dir="expanded_mistral/model",
+    output_dir="short_lora/",
     evaluation_strategy="epoch",
     num_train_epochs= 1,
     learning_rate=1e-5,
@@ -127,4 +127,4 @@ trainer = Trainer(
 )
 
 trainer.train()
-trainer.save_model("expanded_mistral/model")
+trainer.save_model("short_lora/")
