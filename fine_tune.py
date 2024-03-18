@@ -12,8 +12,8 @@ import os, torch, platform, warnings
 
 #MODEL PIPELINE
 
+# base_model = "mistralai/Mistral-7B-v0.1"
 base_model = "mistralai/Mistral-7B-v0.1"
-# base_model = "mistralai/Mistral-7B-Instruct-v0.2"
 
 model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
 
@@ -28,17 +28,8 @@ peft_config = LoraConfig(
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
-        target_modules=[
-            "q_proj",
-            "k_proj",
-            "v_proj",
-            "o_proj",
-            "gate_proj",
-            "up_proj",
-            "down_proj",
-            "lm_head",
-        ]
-)
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
+    )
 model = get_peft_model(model, peft_config)
 
 
