@@ -12,8 +12,8 @@ import os, torch, platform, warnings
 
 #MODEL PIPELINE
 
-# base_model = "mistralai/Mistral-7B-v0.1"
-base_model = "mistralai/Mistral-7B-Instruct-v0.2"
+base_model = "mistralai/Mistral-7B-v0.1"
+# base_model = "mistralai/Mistral-7B-Instruct-v0.2"
 
 model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
 
@@ -117,7 +117,7 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
 training_args = TrainingArguments(
-    output_dir="short_lora/",
+    output_dir="short_lora_noinst/",
     evaluation_strategy="epoch",
     num_train_epochs= 5,
     learning_rate=1e-5,
@@ -136,4 +136,4 @@ trainer = Trainer(
 )
 
 trainer.train()
-trainer.save_model("short_lora/")
+trainer.save_model("short_lora_noinst/")
