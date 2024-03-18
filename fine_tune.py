@@ -108,14 +108,16 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
 training_args = TrainingArguments(
-    output_dir="short_lora_noinst/",
+    output_dir="long_lora_noinst/",
     evaluation_strategy="epoch",
-    num_train_epochs= 5,
+    num_train_epochs= 200,
     learning_rate=1e-5,
     weight_decay=0.01,
     per_device_train_batch_size= 8,
     gradient_accumulation_steps= 2,
     push_to_hub=False,
+    evaluation_strategy="steps",
+    eval_steps=25
 )
 
 trainer = Trainer(
@@ -127,4 +129,4 @@ trainer = Trainer(
 )
 
 trainer.train()
-trainer.save_model("short_lora_noinst/")
+trainer.save_model("long_lora_noinst/")
