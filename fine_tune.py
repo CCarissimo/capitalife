@@ -9,7 +9,6 @@ import torch
 from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
 import os, torch, platform, warnings
 
-export HF_DATASETS_CACHE="/cluster/scratch/.cache"
 #MODEL PIPELINE
 
 # base_model = "mistralai/Mistral-7B-v0.1"
