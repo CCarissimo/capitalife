@@ -13,7 +13,7 @@ import os, torch, platform, warnings
 #MODEL PIPELINE
 
 # base_model = "mistralai/Mistral-7B-v0.1"
-base_model = "/cluster/home/mkoreck/.cache/huggingface/hub/models--mistralai--Mistral-7B-v0.1"
+base_model = "/cluster/home/mkorecki/.cache/huggingface/hub/models--mistralai--Mistral-7B-v0.1"
 
 model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
 
