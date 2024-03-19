@@ -9,11 +9,12 @@ import torch
 from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
 import os, torch, platform, warnings
 
-
+export HF_DATASETS_CACHE="/cluster/scratch/.cache"
 #MODEL PIPELINE
 
 # base_model = "mistralai/Mistral-7B-v0.1"
-base_model = "/cluster/home/mkorecki/.cache/huggingface/hub/models--mistralai--Mistral-7B-v0.1"
+base_model = "mistralai/Mistral-7B-v0.1"
+# base_model = "/cluster/home/mkorecki/.cache/huggingface/hub/models--mistralai--Mistral-7B-v0.1"
 
 model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
 
