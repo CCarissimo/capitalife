@@ -108,7 +108,7 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
 training_args = TrainingArguments(
-    output_dir="full_param/",
+    output_dir="../../../full_param/",
     num_train_epochs= 200,
     learning_rate=2e-5,
     weight_decay=0.01,
@@ -127,4 +127,4 @@ trainer = Trainer(
 )
 
 trainer.train()
-trainer.save_model("full_param/")
+trainer.save_model("../../../full_param/")
