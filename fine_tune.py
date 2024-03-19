@@ -13,7 +13,7 @@ import os, torch, platform, warnings
 
 # base_model = "mistralai/Mistral-7B-v0.1"
 base_model = "mistralai/Mistral-7B-v0.1"
-# base_model = "/cluster/home/mkorecki/.cache/huggingface/hub/models--mistralai--Mistral-7B-v0.1"
+# base_model = "/cluster/scratch/mkorecki/.cache/huggingface/hub/models--mistralai--Mistral-7B-v0.1"
 
 model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto")
 
@@ -108,7 +108,7 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
 training_args = TrainingArguments(
-    output_dir="../../../full_param/",
+    output_dir="/cluster/scratch/mkorecki/full_param/",
     num_train_epochs= 200,
     learning_rate=2e-5,
     weight_decay=0.01,
@@ -127,4 +127,4 @@ trainer = Trainer(
 )
 
 trainer.train()
-trainer.save_model("../../../full_param/")
+trainer.save_model("/cluster/scratch/mkorecki/full_param/")
