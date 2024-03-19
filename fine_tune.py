@@ -21,16 +21,16 @@ model.config.use_cache = False # silence the warnings. Please re-enable for infe
 model.config.pretraining_tp = 1
 model.gradient_checkpointing_enable()
 
-model = prepare_model_for_kbit_training(model)
-peft_config = LoraConfig(
-        r=16,
-        lora_alpha=16,
-        lora_dropout=0.05,
-        bias="none",
-        task_type="CAUSAL_LM",
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
-    )
-model = get_peft_model(model, peft_config)
+# model = prepare_model_for_kbit_training(model)
+# peft_config = LoraConfig(
+#         r=16,
+#         lora_alpha=16,
+#         lora_dropout=0.05,
+#         bias="none",
+#         task_type="CAUSAL_LM",
+#         target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
+#     )
+# model = get_peft_model(model, peft_config)
 
 
 
@@ -108,9 +108,9 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 
 training_args = TrainingArguments(
-    output_dir="long_lora_noinst/",
+    output_dir="full_param/",
     num_train_epochs= 200,
-    learning_rate=1e-5,
+    learning_rate=2e-5,
     weight_decay=0.01,
     per_device_train_batch_size= 8,
     gradient_accumulation_steps= 2,
@@ -127,4 +127,4 @@ trainer = Trainer(
 )
 
 trainer.train()
-trainer.save_model("long_lora_noinst/")
+trainer.save_model("full_param/")
