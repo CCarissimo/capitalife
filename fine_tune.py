@@ -116,6 +116,7 @@ training_args = TrainingArguments(
     gradient_accumulation_steps= 2,
     push_to_hub=False,
     evaluation_strategy="epoch",
+    report_to=None
 )
 
 trainer = Trainer(
