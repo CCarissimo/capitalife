@@ -28,7 +28,7 @@ peft_config = LoraConfig(
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
-        target_modules="all-linear"
+        target_modules=["all-linear", "q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
     )
         #target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
 
